@@ -1,54 +1,61 @@
-const header = document.querySelector(".calendar h3");
-const dates = document.querySelector(".dates");
-const navs = document.querySelectorAll("#prev, #next");
+const monthYearElement = document.getElementById('monthYear');
+const datesElement = document.getElementById('dates');
+const prevBtnElement = document.getElementById('prevBtn');
+const nextBtnElement = document.getElementById('nextBtn');
 
-const months = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
+let currentDate= new Date();
 
-let date = new Date();
-let month = date.getMonth();
-let year = date.getFullYear();
+const updateCalendar= () => {
+  const currentYear=currentDate.getFullYear();
+  const currentMonth=currentDate.getMonth();
 
-function renderCalendar() {
-  const start = new Date(year, month, 1).getDay();
-  const endDate = new Date(year, month + 1, 0).getDate();
-  const end = new Date(year, month, endDate).getDay();
-  const endDatePrev = new Date(year, month, 0).getDate();
+  const firstDay=new Date(currentYear,currentMonth,0);
+  const lastDay=new Date(currentYear,currentMonth +1,0);
+  const totalDays=lastDay.getDate();
+  const firstDayIndex=firstDay.getDay();
+  const lastDayIndex=lastDay.getDay();
 
-  let datesHtml = "";
+  const monthYearString=currentDate.toLocaleString('default',{month: 'long',year: 'numeric'});
+  monthYearElement.textContent=monthYearString;
 
-  for (let i = start; i > 0; i--) {
-    datesHtml += `<li class="inactive">${endDatePrev - i + 1}</li>`;
+  let datesHTML='';
+
+  for(let i = firstDayIndex; i > 0; i--)
+  {
+    const prevDate= new Date(currentYear,currentMonth, 0 - i + 1);
+    datesHTML += `<div class="date inactive">${prevDate.getDate()}</div>`;
   }
 
-  for (let i = 1; i <= endDate; i++) {
-    let className =
-      i === date.getDate() &&
-      month === new Date().getMonth() &&
-      year === new Date().getFullYear()
-        ? ' class="today"'
-        : "";
-    datesHtml += `<li${className}>${i}</li>`;
+
+  for(let i=1; i<=totalDays; i++)
+  {
+    const date=new Date(currentYear,currentMonth, i);
+    const activeClass=date.toDateString() === new Date().toDateString() ? 'active' : '';
+    datesHTML += `<div class="date ${activeClass}">${i}</div>`;
+
   }
 
-  for (let i = end; i < 6; i++) {
-    datesHtml += `<li class="inactive">${i - end + 1}</li>`;
+  for(let i=1; i<=7 - lastDayIndex; i++)
+  {
+    const nextDate=new Date(currentYear,currentMonth +1, i);
+    datesHTML+=`<div class="date inactive">${nextDate.getDate()}</div>`;
+
   }
 
-  dates.innerHTML = datesHtml;
-  header.textContent = `${months[month]} ${year}`;
+  datesElement.innerHTML=datesHTML;
+
 }
 
-renderCalendar();
+  prevBtn.addEventListener('click', () => {
+  currentDate.setMonth(currentDate.getMonth() - 1);
+  updateCalendar();
+});
+
+  nextBtn.addEventListener('click', () => {
+  currentDate.setMonth(currentDate.getMonth() + 1);
+  updateCalendar();
+});
+
+updateCalendar();
+
+
